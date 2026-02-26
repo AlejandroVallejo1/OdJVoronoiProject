@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ShelfOverview } from "./ShelfOverview.jsx";
 import { ProductCard } from "./ProductCard.jsx";
 import { ProductDetail } from "./ProductDetail.jsx";
-import { ChatPanel } from "./ChatPanel.jsx";
 
 const SORT_OPTIONS = [
   { val: "score-asc", label: "Menos sano primero" },
@@ -170,7 +169,6 @@ export function ResultsView({ products, onReset }) {
               </div>
             </div>
           )}
-          <ChatPanel products={products} />
         </div>
       </div>
     </div>

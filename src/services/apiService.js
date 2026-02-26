@@ -8,8 +8,7 @@ if (!API_BASE) {
 
 /** Endpoints del backend (se usan cuando VITE_API_BASE está definido) */
 const ENDPOINTS = {
-  analyze: "/analyze",
-  chat: "/chat",
+  analyzeSegmented: "/analyze-segmented",
 };
 
 export { API_BASE, ENDPOINTS };
@@ -29,7 +28,7 @@ async function getErrorMessage(res) {
 
 export const apiService = {
   async analyzeShelf(imageFile) {
-    const url = `${API_BASE}${ENDPOINTS.analyze}`;
+    const url = `${API_BASE}${ENDPOINTS.analyzeSegmented}`;
     const imgInfo = imageFile ? `${imageFile.name} (${imageFile.size} bytes)` : "null";
     console.log("[apiService.analyzeShelf] Inicio. URL =", url, "| imageFile =", imgInfo);
 
@@ -67,48 +66,6 @@ export const apiService = {
         );
       }
       console.error("[apiService.analyzeShelf] Error:", err?.message ?? err);
-      throw err;
-    }
-  },
-
-  async chat(message, productContext) {
-    const url = `${API_BASE}${ENDPOINTS.chat}`;
-    console.log("[apiService.chat] Inicio. URL =", url, "| message =", message?.slice(0, 50));
-
-    if (!API_BASE) {
-      const msg =
-        "API no configurada. Añade VITE_API_BASE en .env (local) o en Amplify → Hosting → Environment variables (producción).";
-      console.error("[apiService.chat]", msg);
-      throw new Error(msg);
-    }
-
-    try {
-      const body = { message, products: productContext };
-      console.log("[apiService.chat] POST", url, "| body.products.length =", body.products?.length);
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      console.log("[apiService.chat] Response status =", res.status, res.statusText, "| ok =", res.ok);
-
-      if (!res.ok) {
-        const msg = await getErrorMessage(res);
-        console.error("[apiService.chat] ERROR HTTP", res.status, "| URL:", url, "| Mensaje:", msg);
-        throw new Error(msg);
-      }
-      const data = await res.json();
-      console.log("[apiService.chat] OK. reply length =", data?.reply?.length ?? 0);
-      return data;
-    } catch (err) {
-      if (err instanceof TypeError && err.message === "Failed to fetch") {
-        console.error("[apiService.chat] Failed to fetch (red/CORS). URL:", url);
-        throw new Error(
-          `No se pudo conectar al servidor. Revisa que ${API_BASE} esté en línea y CORS permita el origen.`
-        );
-      }
-      console.error("[apiService.chat] Error:", err?.message ?? err);
       throw err;
     }
   },
